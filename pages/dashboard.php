@@ -28,31 +28,53 @@ if (!isset($_SESSION['admin_id'])) {
 
     <div class="container">
         <div class="page-header">
-            <h2>Dashboard</h2>
+            <div>
+                <h2>Dashboard Overview</h2>
+                <p>Ringkasan sistem manajemen data pegawai perusahaan.</p>
+            </div>
         </div>
         
-        <div class="card" style="margin-bottom: 25px;">
-            <h3 style="color: #0f172a; margin-bottom: 10px;">Selamat datang, <?php echo htmlspecialchars($_SESSION['admin_username']); ?>!</h3>
-            <p style="color: #475569;">Sistem Manajemen Pegawai saat ini sedang berjalan dengan baik. Anda memiliki akses penuh untuk menambah, mengubah, dan menghapus data.</p>
+        <div class="card" style="margin-bottom: 30px;">
+            <h3 class="welcome-text">Selamat datang, <?php echo htmlspecialchars($_SESSION['admin_username']); ?>!</h3>
+            <p style="color: #64748b; font-size: 15px;">Sistem beroperasi dengan normal. Berikut adalah statistik data pegawai yang tercatat di dalam sistem.</p>
         </div>
 
-        <div class="dashboard-summary">
-            <div class="summary-card">
-                <h3>Total Pegawai Terdaftar</h3>
-                <div class="number" id="totalEmployees">--</div>
+        <div class="dashboard-grid">
+            <div class="stat-card">
+                <div class="stat-icon primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                    </svg>
+                </div>
+                <div class="stat-details">
+                    <h3>Total Pegawai</h3>
+                    <div class="number" id="totalEmployees">--</div>
+                </div>
             </div>
-            <div class="summary-card" style="border-top-color: #10b981;">
-                <h3>Pegawai Aktif</h3>
-                <div class="number" id="activeEmployees">--</div>
+
+            <div class="stat-card">
+                <div class="stat-icon success">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 01-1.043 3.296 3.745 3.745 0 01-3.296 1.043A3.745 3.745 0 0112 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 01-3.296-1.043 3.745 3.745 0 01-1.043-3.296A3.745 3.745 0 013 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 011.043-3.296 3.746 3.746 0 013.296-1.043A3.746 3.746 0 0112 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 013.296 1.043 3.746 3.746 0 011.043 3.296A3.745 3.745 0 0121 12z" />
+                    </svg>
+                </div>
+                <div class="stat-details">
+                    <h3>Status Aktif</h3>
+                    <div class="number" id="activeEmployees">--</div>
+                </div>
             </div>
-            <div class="summary-card" style="border-top-color: #ef4444;">
-                <h3>Pegawai Nonaktif</h3>
-                <div class="number" id="inactiveEmployees">--</div>
+
+            <div class="stat-card">
+                <div class="stat-icon danger">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <div class="stat-details">
+                    <h3>Status Nonaktif</h3>
+                    <div class="number" id="inactiveEmployees">--</div>
+                </div>
             </div>
-        </div>
-        
-        <div style="margin-top: 30px;">
-            <a href="employees.php" class="btn-primary" style="text-decoration:none; display:inline-block; padding: 12px 25px;">Kelola Data Pegawai &rarr;</a>
         </div>
     </div>
 
@@ -67,14 +89,36 @@ if (!isset($_SESSION['admin_id'])) {
                     const active = data.filter(e => e.status === 'Aktif').length;
                     const inactive = data.filter(e => e.status === 'Nonaktif').length;
 
-                    document.getElementById('totalEmployees').innerText = total;
-                    document.getElementById('activeEmployees').innerText = active;
-                    document.getElementById('inactiveEmployees').innerText = inactive;
+                    // Animasi angka (opsional tapi bagus untuk UI)
+                    animateValue("totalEmployees", 0, total, 1000);
+                    animateValue("activeEmployees", 0, active, 1000);
+                    animateValue("inactiveEmployees", 0, inactive, 1000);
                 }
             } catch (e) {
                 console.error("Gagal mengambil summary data", e);
             }
         });
+
+        function animateValue(id, start, end, duration) {
+            if (start === end) {
+                document.getElementById(id).innerHTML = end;
+                return;
+            }
+            let range = end - start;
+            let current = start;
+            let increment = end > start ? 1 : -1;
+            let stepTime = Math.abs(Math.floor(duration / range));
+            if (stepTime === 0) stepTime = 50; // default safeguard
+            
+            let obj = document.getElementById(id);
+            let timer = setInterval(function() {
+                current += increment;
+                obj.innerHTML = current;
+                if (current == end) {
+                    clearInterval(timer);
+                }
+            }, stepTime);
+        }
     </script>
 </body>
 </html>
