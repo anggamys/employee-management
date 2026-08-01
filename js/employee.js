@@ -24,16 +24,20 @@ async function loadEmployees() {
 
         let rows = '';
         data.forEach(emp => {
+            const statusClass = emp.status === 'Aktif' ? 'badge-aktif' : 'badge-nonaktif';
+            
             rows += `<tr>
                 <td>${emp.id}</td>
-                <td>${emp.name}</td>
+                <td style="font-weight: 500;">${emp.name}</td>
                 <td>${emp.email}</td>
                 <td>${emp.department}</td>
                 <td>${emp.position}</td>
-                <td>${emp.status}</td>
+                <td><span class="badge ${statusClass}">${emp.status}</span></td>
                 <td>
-                    <button class="btn-secondary" onclick="openEditModal(${emp.id})">Edit</button>
-                    <button class="btn-danger" onclick="deleteEmployee(${emp.id})">Delete</button>
+                    <div class="action-buttons">
+                        <button class="btn-secondary btn-sm" onclick="openEditModal(${emp.id})">Edit</button>
+                        <button class="btn-danger btn-sm" onclick="deleteEmployee(${emp.id})">Delete</button>
+                    </div>
                 </td>
             </tr>`;
         });
@@ -100,7 +104,13 @@ async function saveEmployee() {
         const data = await res.json();
         
         if (data.success) {
-            Swal.fire('Sukses', data.message, 'success');
+            Swal.fire({
+                title: 'Sukses', 
+                text: data.message, 
+                icon: 'success',
+                timer: 1500,
+                showConfirmButton: false
+            });
             closeModal();
             loadEmployees();
         } else {
@@ -120,7 +130,8 @@ function deleteEmployee(id) {
         showCancelButton: true,
         confirmButtonColor: '#dc3545',
         cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Ya, hapus!'
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal'
     }).then(async (result) => {
         if (result.isConfirmed) {
             try {
@@ -133,7 +144,13 @@ function deleteEmployee(id) {
                 const data = await res.json();
                 
                 if (data.success) {
-                    Swal.fire('Terhapus!', data.message, 'success');
+                    Swal.fire({
+                        title: 'Terhapus!', 
+                        text: data.message, 
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
                     loadEmployees();
                 } else {
                     Swal.fire('Error', data.message || 'Gagal menghapus data', 'error');
