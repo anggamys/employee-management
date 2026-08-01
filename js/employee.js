@@ -1,9 +1,40 @@
 document.addEventListener("DOMContentLoaded", () => {
     loadEmployees();
 
-    document.getElementById('employeeForm').addEventListener('submit', async function(e) {
+    const form = document.getElementById('employeeForm');
+    
+    // Custom form validation logic
+    form.addEventListener('submit', async function(e) {
         e.preventDefault();
+        
+        // Remove active validation classes first
+        form.classList.remove('was-validated');
+        
+        // Check if form is valid using HTML5 validation API
+        if (!form.checkValidity()) {
+            e.stopPropagation();
+            // Add a class that triggers our CSS invalid states
+            form.classList.add('was-validated');
+            
+            // Focus on the first invalid field
+            const firstInvalid = form.querySelector(':invalid');
+            if(firstInvalid) firstInvalid.focus();
+            
+            return;
+        }
+        
         saveEmployee();
+    });
+
+    // Real-time validation feedback as user types
+    const inputs = form.querySelectorAll('input, select');
+    inputs.forEach(input => {
+        input.addEventListener('input', () => {
+            if (form.classList.contains('was-validated')) {
+                // If already submitted once, show immediate validation on typing
+                input.checkValidity();
+            }
+        });
     });
 });
 
@@ -50,13 +81,21 @@ async function loadEmployees() {
 
 function openAddModal() {
     document.getElementById('modalTitle').innerText = 'Tambah Pegawai';
-    document.getElementById('employeeForm').reset();
+    const form = document.getElementById('employeeForm');
+    form.reset();
+    form.classList.remove('was-validated');
     document.getElementById('emp_id').value = '';
+    
+    // Reset select state
+    document.getElementById('emp_status').value = "";
+    
     document.getElementById('employeeModal').style.display = 'block';
 }
 
 function openEditModal(id) {
     document.getElementById('modalTitle').innerText = 'Edit Pegawai';
+    const form = document.getElementById('employeeForm');
+    form.classList.remove('was-validated');
     
     // Ambil data langsung dari variabel tanpa fetch ke server lagi
     const emp = window.employeesData.find(e => e.id == id);
