@@ -23,6 +23,9 @@ $role_display = (isset($_SESSION['admin_role']) && $_SESSION['admin_role'] === '
             <nav style="display: flex; align-items: center;">
                 <a href="dashboard.php" class="active">Dashboard</a>
                 <a href="employees.php">Data Pegawai</a>
+                <?php if($_SESSION['admin_role'] === 'superadmin'): ?>
+                    <a href="manage_hrd.php">Kelola HRD</a>
+                <?php endif; ?>
                 <div style="margin-left: 20px; padding-left: 20px; border-left: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px;">
                     <div style="text-align: right;">
                         <div style="font-weight: 600; font-size: 14px; color: #0f172a;"><?php echo htmlspecialchars($_SESSION['admin_username']); ?></div>
