@@ -5,7 +5,7 @@ if (!isset($_SESSION['admin_id'])) {
     exit();
 }
 
-$role_display = $_SESSION['admin_role'] === 'superadmin' ? 'Super Admin' : 'Staff HRD';
+$role_display = (isset($_SESSION['admin_role']) && $_SESSION['admin_role'] === 'superadmin') ? 'Super Admin' : 'Staff HRD';
 ?>
 <!DOCTYPE html>
 <html lang="id">
