@@ -11,6 +11,7 @@ CREATE TABLE employees (
   department VARCHAR(50) NOT NULL,
   position VARCHAR(50) NOT NULL,
   status VARCHAR(20) NOT NULL DEFAULT 'Aktif',
+  photo VARCHAR(255) DEFAULT NULL,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -18,7 +19,7 @@ CREATE TABLE employees (
 INSERT INTO admin (username, password) VALUES ('admin', '$2y$12$SiycjCpeahMtLrnok37gcOLwD4FSbkJhrdNBxVC71y91Ti0jwxyte');
 
 -- Masukkan data pegawai dummy
-INSERT INTO employees (name, email, department, position, status) VALUES 
-('Angga', 'angga@example.com', 'IT', 'Developer', 'Aktif'),
-('Budi', 'budi@example.com', 'HR', 'Manager', 'Aktif'),
-('Citra', 'citra@example.com', 'Finance', 'Staff', 'Nonaktif');
+INSERT INTO employees (name, email, department, position, status, photo) VALUES 
+('Angga', 'angga@example.com', 'IT', 'Developer', 'Aktif', NULL),
+('Budi', 'budi@example.com', 'HR', 'Manager', 'Aktif', NULL),
+('Citra', 'citra@example.com', 'Finance', 'Staff', 'Nonaktif', NULL);

@@ -3,20 +3,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const form = document.getElementById('employeeForm');
     
-    // Logika validasi form kustom
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        // Hapus class validasi aktif terlebih dahulu
         form.classList.remove('was-validated');
         
-        // Periksa apakah form valid menggunakan HTML5 validation API
         if (!form.checkValidity()) {
             e.stopPropagation();
-            // Tambahkan class yang memicu state CSS invalid kita
             form.classList.add('was-validated');
             
-            // Fokus pada input invalid pertama
             const firstInvalid = form.querySelector(':invalid');
             if(firstInvalid) firstInvalid.focus();
             
@@ -26,17 +21,24 @@ document.addEventListener("DOMContentLoaded", () => {
         saveEmployee();
     });
 
-    // Umpan balik validasi real-time saat pengguna mengetik
     const inputs = form.querySelectorAll('input, select');
     inputs.forEach(input => {
         input.addEventListener('input', () => {
             if (form.classList.contains('was-validated')) {
-                // Jika sudah pernah disubmit sekali, tampilkan validasi langsung saat mengetik
                 input.checkValidity();
             }
         });
     });
+
+    // Fitur Live Search
+    document.getElementById('searchInput').addEventListener('input', renderTable);
+    
+    // Fitur Filter Status
+    document.getElementById('statusFilter').addEventListener('change', renderTable);
 });
+
+let currentSortColumn = 'id';
+let isAscending = true;
 
 async function loadEmployees() {
     try {
@@ -49,33 +51,118 @@ async function loadEmployees() {
             throw new Error('Gagal memuat data');
         }
         const data = await res.json();
-        
-        // Simpan data di global window object untuk mempermudah edit tanpa fetch ulang
         window.employeesData = data; 
-
-        let rows = '';
-        data.forEach(emp => {
-            const statusClass = emp.status === 'Aktif' ? 'badge-aktif' : 'badge-nonaktif';
-            
-            rows += `<tr>
-                <td>${emp.id}</td>
-                <td style="font-weight: 500;">${emp.name}</td>
-                <td>${emp.email}</td>
-                <td>${emp.department}</td>
-                <td>${emp.position}</td>
-                <td><span class="badge ${statusClass}">${emp.status}</span></td>
-                <td>
-                    <div class="action-buttons">
-                        <button class="btn-secondary btn-sm" onclick="openEditModal(${emp.id})">Edit</button>
-                        <button class="btn-danger btn-sm" onclick="deleteEmployee(${emp.id})">Delete</button>
-                    </div>
-                </td>
-            </tr>`;
-        });
-        document.querySelector('#employeeTable tbody').innerHTML = rows;
+        
+        renderTable();
     } catch (error) {
         console.error("Error memuat pegawai:", error);
         Swal.fire('Error', 'Gagal memuat data pegawai', 'error');
+    }
+}
+
+function renderTable() {
+    if (!window.employeesData) return;
+
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    const statusFilter = document.getElementById('statusFilter').value;
+
+    // Filter data berdasarkan search dan status
+    let filteredData = window.employeesData.filter(emp => {
+        const matchSearch = emp.name.toLowerCase().includes(searchTerm) || 
+                            emp.department.toLowerCase().includes(searchTerm) ||
+                            emp.email.toLowerCase().includes(searchTerm);
+        const matchStatus = statusFilter === 'all' || emp.status === statusFilter;
+        return matchSearch && matchStatus;
+    });
+
+    // Sorting data
+    filteredData.sort((a, b) => {
+        let valA = a[currentSortColumn];
+        let valB = b[currentSortColumn];
+        
+        // Convert ID to number for proper sorting
+        if (currentSortColumn === 'id') {
+            valA = parseInt(valA);
+            valB = parseInt(valB);
+        } else {
+            valA = valA.toLowerCase();
+            valB = valB.toLowerCase();
+        }
+
+        if (valA < valB) return isAscending ? -1 : 1;
+        if (valA > valB) return isAscending ? 1 : -1;
+        return 0;
+    });
+
+    const tbody = document.getElementById('tableBody');
+    const emptyState = document.getElementById('emptyState');
+    const table = document.getElementById('employeeTable');
+
+    if (filteredData.length === 0) {
+        tbody.innerHTML = '';
+        table.style.display = 'none';
+        emptyState.style.display = 'block';
+        return;
+    }
+
+    table.style.display = 'table';
+    emptyState.style.display = 'none';
+
+    let rows = '';
+    filteredData.forEach(emp => {
+        const statusClass = emp.status === 'Aktif' ? 'badge-aktif' : 'badge-nonaktif';
+        // Tampilkan foto profil default jika null
+        const photoUrl = emp.photo ? `../assets/uploads/${emp.photo}` : 'https://ui-avatars.com/api/?background=e2e8f0&color=475569&name=' + encodeURIComponent(emp.name);
+        
+        rows += `<tr>
+            <td>${emp.id}</td>
+            <td>
+                <div class="user-info">
+                    <img src="${photoUrl}" alt="Photo" class="user-avatar">
+                    <span style="font-weight: 500;">${emp.name}</span>
+                </div>
+            </td>
+            <td>${emp.email}</td>
+            <td>${emp.department}</td>
+            <td>${emp.position}</td>
+            <td><span class="badge ${statusClass}">${emp.status}</span></td>
+            <td>
+                <div class="action-buttons">
+                    <button class="btn-secondary btn-sm" onclick="openEditModal(${emp.id})">Edit</button>
+                    <button class="btn-danger btn-sm" onclick="deleteEmployee(${emp.id})">Delete</button>
+                </div>
+            </td>
+        </tr>`;
+    });
+    tbody.innerHTML = rows;
+}
+
+function sortTable(column) {
+    if (currentSortColumn === column) {
+        isAscending = !isAscending; // Toggle sort direction
+    } else {
+        currentSortColumn = column;
+        isAscending = true;
+    }
+    renderTable();
+}
+
+function previewImage(input) {
+    const preview = document.getElementById('photoPreview');
+    const placeholder = document.getElementById('photoPlaceholder');
+    
+    if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            preview.src = e.target.result;
+            preview.style.display = 'block';
+            placeholder.style.display = 'none';
+        }
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        preview.src = '';
+        preview.style.display = 'none';
+        placeholder.style.display = 'flex';
     }
 }
 
@@ -85,9 +172,12 @@ function openAddModal() {
     form.reset();
     form.classList.remove('was-validated');
     document.getElementById('emp_id').value = '';
-    
-    // Reset state pilihan
     document.getElementById('emp_status').value = "";
+    
+    // Reset image preview
+    document.getElementById('photoPreview').style.display = 'none';
+    document.getElementById('photoPlaceholder').style.display = 'flex';
+    document.getElementById('emp_photo').value = "";
     
     document.getElementById('employeeModal').style.display = 'block';
 }
@@ -97,7 +187,6 @@ function openEditModal(id) {
     const form = document.getElementById('employeeForm');
     form.classList.remove('was-validated');
     
-    // Ambil data langsung dari variabel tanpa fetch ke server lagi
     const emp = window.employeesData.find(e => e.id == id);
     if (emp) {
         document.getElementById('emp_id').value = emp.id;
@@ -106,6 +195,20 @@ function openEditModal(id) {
         document.getElementById('emp_department').value = emp.department;
         document.getElementById('emp_position').value = emp.position;
         document.getElementById('emp_status').value = emp.status;
+        
+        // Setup image preview
+        const preview = document.getElementById('photoPreview');
+        const placeholder = document.getElementById('photoPlaceholder');
+        if (emp.photo) {
+            preview.src = `../assets/uploads/${emp.photo}`;
+            preview.style.display = 'block';
+            placeholder.style.display = 'none';
+        } else {
+            preview.src = '';
+            preview.style.display = 'none';
+            placeholder.style.display = 'flex';
+        }
+        document.getElementById('emp_photo').value = "";
         
         document.getElementById('employeeModal').style.display = 'block';
     }
@@ -116,28 +219,27 @@ function closeModal() {
 }
 
 async function saveEmployee() {
+    const btn = document.getElementById('btnSubmit');
+    const originalText = btn.innerText;
+    btn.innerText = 'Menyimpan...';
+    btn.disabled = true;
+
     const id = document.getElementById('emp_id').value;
     const isEdit = id !== '';
+    const form = document.getElementById('employeeForm');
     
-    const payload = {
-        name: document.getElementById('emp_name').value,
-        email: document.getElementById('emp_email').value,
-        department: document.getElementById('emp_department').value,
-        position: document.getElementById('emp_position').value,
-        status: document.getElementById('emp_status').value
-    };
+    // Menggunakan FormData untuk mendukung File Upload
+    const formData = new FormData(form);
     
     let url = '../api/addEmployee.php';
     if (isEdit) {
-        payload.id = id;
         url = '../api/updateEmployee.php';
     }
 
     try {
         const res = await fetch(url, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            body: formData // Body is FormData, NO JSON.stringify, NO Content-Type header (browser sets boundary automatically)
         });
         
         const data = await res.json();
@@ -151,13 +253,16 @@ async function saveEmployee() {
                 showConfirmButton: false
             });
             closeModal();
-            loadEmployees();
+            loadEmployees(); // fetch ulang data terbaru
         } else {
             Swal.fire('Error', data.message || 'Gagal menyimpan data', 'error');
         }
     } catch (error) {
         console.error("Error menyimpan pegawai:", error);
         Swal.fire('Error', 'Terjadi kesalahan jaringan', 'error');
+    } finally {
+        btn.innerText = originalText;
+        btn.disabled = false;
     }
 }
 
@@ -174,6 +279,7 @@ function deleteEmployee(id) {
     }).then(async (result) => {
         if (result.isConfirmed) {
             try {
+                // Untuk delete tetap pakai JSON (karena tidak ada file upload)
                 const res = await fetch('../api/deleteEmployee.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
