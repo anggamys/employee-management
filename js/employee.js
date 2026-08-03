@@ -1,7 +1,7 @@
 let userRole = 'hrd'; // Default fallback
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // Fetch user role first
+    // Ambil role user terlebih dahulu
     try {
         const roleRes = await fetch('../api/getRole.php');
         if (roleRes.ok) {
@@ -88,12 +88,12 @@ function renderTable() {
         return matchSearch && matchStatus;
     });
 
-    // Sorting data
+    // Urutkan (Sorting) data
     filteredData.sort((a, b) => {
         let valA = a[currentSortColumn];
         let valB = b[currentSortColumn];
         
-        // Convert ID to number for proper sorting
+        // Ubah ID menjadi angka agar pengurutan benar
         if (currentSortColumn === 'id') {
             valA = parseInt(valA);
             valB = parseInt(valB);
@@ -127,7 +127,7 @@ function renderTable() {
         // Tampilkan foto profil default jika null
         const photoUrl = emp.photo ? `../assets/uploads/${emp.photo}` : 'https://ui-avatars.com/api/?background=e2e8f0&color=475569&name=' + encodeURIComponent(emp.name);
         
-        // Hide delete button if role is not superadmin
+        // Sembunyikan tombol delete jika role bukan superadmin
         const deleteButtonHtml = userRole === 'superadmin' 
             ? `<button class="btn-danger btn-sm" onclick="deleteEmployee(${emp.id})">Delete</button>` 
             : '';
@@ -157,7 +157,7 @@ function renderTable() {
 
 function sortTable(column) {
     if (currentSortColumn === column) {
-        isAscending = !isAscending; // Toggle sort direction
+        isAscending = !isAscending; // Balikkan arah urutan
     } else {
         currentSortColumn = column;
         isAscending = true;
@@ -192,7 +192,7 @@ function openAddModal() {
     document.getElementById('emp_id').value = '';
     document.getElementById('emp_status').value = "";
     
-    // Reset image preview
+    // Reset pratinjau gambar
     document.getElementById('photoPreview').style.display = 'none';
     document.getElementById('photoPlaceholder').style.display = 'flex';
     document.getElementById('emp_photo').value = "";
@@ -214,7 +214,7 @@ function openEditModal(id) {
         document.getElementById('emp_position').value = emp.position;
         document.getElementById('emp_status').value = emp.status;
         
-        // Setup image preview
+        // Setup pratinjau gambar untuk edit
         const preview = document.getElementById('photoPreview');
         const placeholder = document.getElementById('photoPlaceholder');
         if (emp.photo) {
@@ -257,7 +257,7 @@ async function saveEmployee() {
     try {
         const res = await fetch(url, {
             method: 'POST',
-            body: formData // Body is FormData, NO JSON.stringify, NO Content-Type header (browser sets boundary automatically)
+            body: formData // Body adalah FormData, TIDAK PERLU JSON.stringify, TIDAK PERLU Content-Type header (browser menentukannya otomatis)
         });
         
         const data = await res.json();
@@ -271,7 +271,7 @@ async function saveEmployee() {
                 showConfirmButton: false
             });
             closeModal();
-            loadEmployees(); // fetch ulang data terbaru
+            loadEmployees(); // Ambil ulang data terbaru
         } else {
             Swal.fire('Error', data.message || 'Gagal menyimpan data', 'error');
         }
@@ -297,7 +297,7 @@ function deleteEmployee(id) {
     }).then(async (result) => {
         if (result.isConfirmed) {
             try {
-                // Untuk delete tetap pakai JSON (karena tidak ada file upload)
+                // Untuk hapus tetap pakai JSON (karena tidak ada file upload)
                 const res = await fetch('../api/deleteEmployee.php', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
