@@ -13,7 +13,6 @@ Sistem manajemen pegawai berbasis web (PHP Native) yang dibuat untuk memenuhi Tu
 7.  **Data Flow Array PHP:** Menampung hasil query ke dalam variabel array PHP eksplisit sebelum ditampilkan via `json_encode()` ke frontend.
 8.  **Pemisahan Aset:** File HTML/PHP, CSS, dan JavaScript disimpan dalam file dan folder yang terpisah.
 
----
 
 ## Prasyarat Lingkungan (Environment)
 
@@ -22,7 +21,6 @@ Sistem manajemen pegawai berbasis web (PHP Native) yang dibuat untuk memenuhi Tu
 *   Web Server (Apache/Nginx) -> Bisa menggunakan XAMPP, WAMP, MAMP, atau LAMP stack.
 *   Browser modern dengan dukungan Fetch API (Chrome, Firefox, Edge, Safari).
 
----
 
 ## Panduan Instalasi dan Menjalankan Aplikasi
 
@@ -89,11 +87,3 @@ Setelah aplikasi terbuka di browser, Anda akan diarahkan ke halaman Login. Gunak
 *   **Password:** `admin123`
 
 Setelah berhasil login, Anda dapat langsung menguji fitur Tambah, Edit, dan Hapus pegawai dari halaman Data Pegawai. Semua proses harus berjalan asinkron tanpa reload pada browser (Anda bisa memeriksanya dengan melihat tidak ada icon *refresh* browser yang berputar saat Anda menyimpan/menghapus data).
-
----
-
-## Catatan Penting Saat Demo
-
-*   **Pemrosesan Data Array:** Jika asisten atau dosen meminta bukti bahwa data disimpan dalam array sebelum dirender (Kriteria wajib no 6), tunjukkan file `api/getEmployees.php` pada baris 15-18 (`$employees[] = $row;`).
-*   **Tidak Ada Refresh:** Jika ditanya bukti halaman tidak berpindah, tekan tombol `F12` (DevTools browser), masuk ke tab **Network**, pilih filter **Fetch/XHR**, lalu lakukan aksi (Tambah/Edit/Hapus). Tunjukkan bahwa yang terjadi hanya pemanggilan file API (`.php`), bukan pemuatan ulang file HTML.
-*   **Offline Mode:** Library SweetAlert2 saat ini di-load menggunakan koneksi internet (CDN). Jika koneksi internet dirasa kurang stabil pada saat demo, sangat disarankan untuk mengunduh library tersebut dan menaruhnya di folder `assets/` secara lokal.
