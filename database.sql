@@ -14,10 +14,10 @@ CREATE TABLE employees (
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- Insert dummy admin (password is 'admin123')
+-- Masukkan data admin dummy (password adalah 'admin123')
 INSERT INTO admin (username, password) VALUES ('admin', '$2y$12$SiycjCpeahMtLrnok37gcOLwD4FSbkJhrdNBxVC71y91Ti0jwxyte');
 
--- Insert dummy employees
+-- Masukkan data pegawai dummy
 INSERT INTO employees (name, email, department, position, status) VALUES 
 ('Angga', 'angga@example.com', 'IT', 'Developer', 'Aktif'),
 ('Budi', 'budi@example.com', 'HR', 'Manager', 'Aktif'),

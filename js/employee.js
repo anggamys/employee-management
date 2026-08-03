@@ -3,20 +3,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const form = document.getElementById('employeeForm');
     
-    // Custom form validation logic
+    // Logika validasi form kustom
     form.addEventListener('submit', async function(e) {
         e.preventDefault();
         
-        // Remove active validation classes first
+        // Hapus class validasi aktif terlebih dahulu
         form.classList.remove('was-validated');
         
-        // Check if form is valid using HTML5 validation API
+        // Periksa apakah form valid menggunakan HTML5 validation API
         if (!form.checkValidity()) {
             e.stopPropagation();
-            // Add a class that triggers our CSS invalid states
+            // Tambahkan class yang memicu state CSS invalid kita
             form.classList.add('was-validated');
             
-            // Focus on the first invalid field
+            // Fokus pada input invalid pertama
             const firstInvalid = form.querySelector(':invalid');
             if(firstInvalid) firstInvalid.focus();
             
@@ -26,12 +26,12 @@ document.addEventListener("DOMContentLoaded", () => {
         saveEmployee();
     });
 
-    // Real-time validation feedback as user types
+    // Umpan balik validasi real-time saat pengguna mengetik
     const inputs = form.querySelectorAll('input, select');
     inputs.forEach(input => {
         input.addEventListener('input', () => {
             if (form.classList.contains('was-validated')) {
-                // If already submitted once, show immediate validation on typing
+                // Jika sudah pernah disubmit sekali, tampilkan validasi langsung saat mengetik
                 input.checkValidity();
             }
         });
@@ -74,7 +74,7 @@ async function loadEmployees() {
         });
         document.querySelector('#employeeTable tbody').innerHTML = rows;
     } catch (error) {
-        console.error("Error loading employees:", error);
+        console.error("Error memuat pegawai:", error);
         Swal.fire('Error', 'Gagal memuat data pegawai', 'error');
     }
 }
@@ -86,7 +86,7 @@ function openAddModal() {
     form.classList.remove('was-validated');
     document.getElementById('emp_id').value = '';
     
-    // Reset select state
+    // Reset state pilihan
     document.getElementById('emp_status').value = "";
     
     document.getElementById('employeeModal').style.display = 'block';
@@ -156,7 +156,7 @@ async function saveEmployee() {
             Swal.fire('Error', data.message || 'Gagal menyimpan data', 'error');
         }
     } catch (error) {
-        console.error("Error saving employee:", error);
+        console.error("Error menyimpan pegawai:", error);
         Swal.fire('Error', 'Terjadi kesalahan jaringan', 'error');
     }
 }
@@ -195,7 +195,7 @@ function deleteEmployee(id) {
                     Swal.fire('Error', data.message || 'Gagal menghapus data', 'error');
                 }
             } catch (error) {
-                console.error("Error deleting employee:", error);
+                console.error("Error menghapus pegawai:", error);
                 Swal.fire('Error', 'Terjadi kesalahan jaringan', 'error');
             }
         }
