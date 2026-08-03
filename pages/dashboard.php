@@ -4,6 +4,8 @@ if (!isset($_SESSION['admin_id'])) {
     header("Location: login.php");
     exit();
 }
+
+$role_display = $_SESSION['admin_role'] === 'superadmin' ? 'Super Admin' : 'Staff HRD';
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -18,10 +20,16 @@ if (!isset($_SESSION['admin_id'])) {
     <header>
         <div class="container">
             <h1>Employee Management</h1>
-            <nav>
+            <nav style="display: flex; align-items: center;">
                 <a href="dashboard.php" class="active">Dashboard</a>
                 <a href="employees.php">Data Pegawai</a>
-                <a href="../api/logout.php">Logout</a>
+                <div style="margin-left: 20px; padding-left: 20px; border-left: 1px solid #e2e8f0; display: flex; align-items: center; gap: 10px;">
+                    <div style="text-align: right;">
+                        <div style="font-weight: 600; font-size: 14px; color: #0f172a;"><?php echo htmlspecialchars($_SESSION['admin_username']); ?></div>
+                        <div style="font-size: 11px; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px;"><?php echo $role_display; ?></div>
+                    </div>
+                    <a href="../api/logout.php" style="margin-left: 0; padding: 6px 12px; background: #fee2e2; color: #ef4444; border-radius: 6px;">Logout</a>
+                </div>
             </nav>
         </div>
     </header>
@@ -36,7 +44,7 @@ if (!isset($_SESSION['admin_id'])) {
         
         <div class="card" style="margin-bottom: 30px;">
             <h3 class="welcome-text">Selamat datang, <?php echo htmlspecialchars($_SESSION['admin_username']); ?>!</h3>
-            <p style="color: #64748b; font-size: 15px;">Sistem beroperasi dengan normal. Berikut adalah statistik data pegawai yang tercatat di dalam sistem.</p>
+            <p style="color: #64748b; font-size: 15px;">Sistem beroperasi dengan normal. Anda login sebagai <strong><?php echo $role_display; ?></strong>.</p>
         </div>
 
         <div class="dashboard-grid">

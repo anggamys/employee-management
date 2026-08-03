@@ -13,6 +13,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (password_verify($password, $row['password'])) {
             $_SESSION['admin_id'] = $row['id'];
             $_SESSION['admin_username'] = $row['username'];
+            $_SESSION['admin_role'] = $row['role']; // Simpan role ke session
+            
             header("Location: ../pages/dashboard.php");
             exit();
         }

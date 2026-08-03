@@ -1,4 +1,17 @@
-document.addEventListener("DOMContentLoaded", () => {
+let userRole = 'hrd'; // Default fallback
+
+document.addEventListener("DOMContentLoaded", async () => {
+    // Fetch user role first
+    try {
+        const roleRes = await fetch('../api/getRole.php');
+        if (roleRes.ok) {
+            const roleData = await roleRes.json();
+            userRole = roleData.role;
+        }
+    } catch (e) {
+        console.error("Gagal memuat role", e);
+    }
+
     loadEmployees();
 
     const form = document.getElementById('employeeForm');
@@ -114,6 +127,11 @@ function renderTable() {
         // Tampilkan foto profil default jika null
         const photoUrl = emp.photo ? `../assets/uploads/${emp.photo}` : 'https://ui-avatars.com/api/?background=e2e8f0&color=475569&name=' + encodeURIComponent(emp.name);
         
+        // Hide delete button if role is not superadmin
+        const deleteButtonHtml = userRole === 'superadmin' 
+            ? `<button class="btn-danger btn-sm" onclick="deleteEmployee(${emp.id})">Delete</button>` 
+            : '';
+
         rows += `<tr>
             <td>${emp.id}</td>
             <td>
@@ -129,7 +147,7 @@ function renderTable() {
             <td>
                 <div class="action-buttons">
                     <button class="btn-secondary btn-sm" onclick="openEditModal(${emp.id})">Edit</button>
-                    <button class="btn-danger btn-sm" onclick="deleteEmployee(${emp.id})">Delete</button>
+                    ${deleteButtonHtml}
                 </div>
             </td>
         </tr>`;
